@@ -37,7 +37,7 @@ const main = () => {
 
   // Set background texture
   const loader = new THREE.TextureLoader();
-  const backgroundTexture = loader.load("./public/peakpx.png");
+  const backgroundTexture = loader.load("https://res.cloudinary.com/atlasair/image/upload/v1722566220/peakpx_aekzhn.png");
   scene.background = backgroundTexture;
   // Create a dark overlay to make the background darker
   const overlayGeometry = new THREE.PlaneGeometry(2, 2);
