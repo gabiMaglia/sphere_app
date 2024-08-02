@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as THREE from "three";
 
 // Function to generate random particle positions
 const getRandomParticlePos = (particleCount) => {
@@ -35,44 +35,76 @@ const main = () => {
   renderer.setClearColor(new THREE.Color("#3c1970"));
   const scene = new THREE.Scene();
 
+  // Set background texture
+  const loader = new THREE.TextureLoader();
+  const backgroundTexture = loader.load("./public/peakpx.png");
+  scene.background = backgroundTexture;
+  // Create a dark overlay to make the background darker
+  const overlayGeometry = new THREE.PlaneGeometry(2, 2);
+  const overlayMaterial = new THREE.MeshBasicMaterial({
+    color: 0x000000,
+    opacity: 0.7, // Adjust this value for desired darkness
+    transparent: true,
+  });
+  const overlay = new THREE.Mesh(overlayGeometry, overlayMaterial);
+  overlay.position.z = -4; // Ensure overlay is behind other objects
+  scene.add(overlay);
+
+  // Resize overlay to cover the entire screen
+  const resizeOverlay = () => {
+    overlay.scale.set(window.innerWidth, window.innerHeight, 1);
+  };
+  window.addEventListener("resize", () => {
+    resizeRendererToDisplaySize(renderer);
+    const canvas = renderer.domElement;
+    camera.aspect = canvas.clientWidth / canvas.clientHeight;
+    camera.updateProjectionMatrix();
+    resizeOverlay();
+  });
+  resizeOverlay();
+
   // Light source
-  const light = new THREE.DirectionalLight(0xffffff, 11);
-  light.position.set(-1, 22, 100);
-  scene.add(light);
+  const pointLight = new THREE.PointLight(0xffffff, 10, 10, 1);
+  pointLight.position.set(0, 10, 0); // Positioning the light directly above
+
+  scene.add(pointLight);
 
   // Camera setup
-  const fov = 105;
-  const aspect = 2;  // the canvas default
-  const near = 1.5;
-  const far = 5;
+  const fov = 75;
+  const aspect = 2; // the canvas default
+  const near = 0.1;
+  const far = 100;
   const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-  camera.position.z = 2;
+  camera.position.z = 4;
 
   // Create geometries for particles
   const geometries = [new THREE.BufferGeometry(), new THREE.BufferGeometry()];
 
   geometries[0].setAttribute(
     "position",
-    new THREE.BufferAttribute(getRandomParticlePos(350), 8)
+    new THREE.BufferAttribute(getRandomParticlePos(350), 3)
   );
   geometries[1].setAttribute(
     "position",
     new THREE.BufferAttribute(getRandomParticlePos(1500), 3)
   );
 
-  // Load textures
-  const loader = new THREE.TextureLoader();
+  // Load particle textures
   const materials = [
     new THREE.PointsMaterial({
-      size: 0.07,
-      map: loader.load("https://raw.githubusercontent.com/Kuntal-Das/textures/main/sp1.png"),
-      transparent: true
+      size: 0.04,
+      map: loader.load(
+        "https://raw.githubusercontent.com/Kuntal-Das/textures/main/sp1.png"
+      ),
+      transparent: true,
     }),
     new THREE.PointsMaterial({
-      size: 0.105,
-      map: loader.load("https://raw.githubusercontent.com/Kuntal-Das/textures/main/sp2.png"),
-      transparent: true
-    })
+      size: 0.06,
+      map: loader.load(
+        "https://raw.githubusercontent.com/Kuntal-Das/textures/main/sp2.png"
+      ),
+      transparent: true,
+    }),
   ];
 
   // Create particle systems
@@ -84,7 +116,7 @@ const main = () => {
   // Render loop
   const render = (time) => {
     // Adjust time for animation if needed
-    // time *= 0.001;
+  
 
     if (resizeRendererToDisplaySize(renderer)) {
       const canvas = renderer.domElement;
@@ -93,7 +125,7 @@ const main = () => {
     }
 
     // Update particle positions based on mouse
-    starsT1.position.x = mouseX * 0.0011;
+    starsT1.position.x = mouseX * 0.0001;
     starsT1.position.y = mouseY * -0.0001;
 
     starsT2.position.x = mouseX * 0.0001;
